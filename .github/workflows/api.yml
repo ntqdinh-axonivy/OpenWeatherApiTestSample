@@ -14,14 +14,16 @@ jobs:
 
       - name: Run Newman tests in Docker
         run: |
-          docker run --rm -v ${{ github.workspace }}:/etc/newman \
-          postman/newman:latest sh -c "
-            npm install -g newman-reporter-html && 
-            newman run /etc/newman/api.postman_collection.json \
-            --reporters cli,html \
-            --reporter-html-export /etc/newman/report.html
+          docker run --rm \
+          -v ${{ github.workspace }}:/etc/newman \
+          --entrypoint sh \
+          postman/newman:latest -c "
+          npm install -g newman-reporter-html && 
+          newman run /etc/newman/api.postman_collection.json \
+          --reporters cli,html \
+          --reporter-html-export /etc/newman/report.html
           "
-      
+          
       - name: Check if report exists
         run: ls -l ./report.html
         
