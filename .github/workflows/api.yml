@@ -18,17 +18,17 @@ jobs:
           -v ${{ github.workspace }}:/etc/newman \
           --entrypoint sh \
           postman/newman:latest -c "
-          npm install -g newman-reporter-html && 
+          echo "Run defined api collection & gen ctrf test report with newman cli" &&
+          npm install newman-reporter-ctrf-json &&
           newman run /etc/newman/api.postman_collection.json \
-          --reporters cli,html \
-          --reporter-html-export /etc/newman/report.html
+          -r cli,ctrf-json \
+          --reporter-ctrf-json-test-type api 
+          --reporter-ctrf-json-app-name Api Testing result
           "
           
       - name: Check if report exists
         run: ls -l ./report.html
-        
-      - name: Upload Newman Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: newman-report
-          path: ./report.html
+
+      - name: Export test summary
+        if: always()
+        run: npx github-actions-ctrf ./ctrf/ctrf-report.json
