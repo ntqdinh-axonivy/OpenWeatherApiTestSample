@@ -5,7 +5,7 @@ on:
     inputs:
       env_content:
         description: 'Content of postman environment file'
-        default: ''
+        default: '{"id":"env","values":[]}'
 
 jobs:
   newman-tests:
@@ -31,8 +31,6 @@ jobs:
       - name: Set up Node.js
         if: steps.check_file.outcome == 'success'
         uses: actions/setup-node@v3
-        with:
-          node-version: '16'
 
       - name: Install dependencies
         if: steps.check_file.outcome == 'success'
