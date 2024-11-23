@@ -18,7 +18,7 @@ jobs:
 
       - name: Debug env_content input
         run: |
-          echo "env_content: '${{ github.event.inputs.env_content }}'"
+          echo "${{ github.event.inputs.env_content }}"
         
       - name: Check if collection file exists
         id: check_file
