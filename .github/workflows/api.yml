@@ -1,6 +1,7 @@
 name: Postman Newman API Tests
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       env_content:
