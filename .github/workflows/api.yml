@@ -3,9 +3,9 @@ name: Postman Newman API Tests
 on:
   workflow_dispatch:
     inputs:
-      env_file_content:
-      decriptiion: 'Content of postman environment file'
-      default: ''
+      env_content:
+        description: 'Content of postman environment file'
+        default: ''
 
 jobs:
   newman-tests:
