@@ -15,6 +15,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Debug env_content input
+        run: |
+          echo "env_content: '${{ github.event.inputs.env_content }}'"
         
       - name: Check if collection file exists
         id: check_file
@@ -27,7 +31,12 @@ jobs:
       - name: prepare env file
         if: steps.check_file.outcome == 'success'
         run: |
+          echo "Environment file content:"
           echo "${{ github.event.inputs.env_content }}" > postman_env.json
+          cat postman_env.json
+          
+      - name: Validate JSON structure
+        run: cat postman_env.json | jq .
 
       - name: Set up Node.js
         if: steps.check_file.outcome == 'success'
@@ -37,6 +46,9 @@ jobs:
         if: steps.check_file.outcome == 'success'
         run: |
           npm install -g newman newman-reporter-ctrf-json
+          
+      - name: Debug env file
+        run: cat postman_env.json
 
       - name: Run Newman tests
         if: steps.check_file.outcome == 'success'        
