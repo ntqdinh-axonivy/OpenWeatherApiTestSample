@@ -3,6 +3,10 @@ name: Postman Newman API Tests
 on:
   push:
   workflow_dispatch:
+    inputs:
+      env_file_content:
+      decriptiion: 'Content of postman environment file'
+      default: ''
 
 jobs:
   newman-tests:
@@ -20,6 +24,11 @@ jobs:
             exit 1  # Fail the job if the file doesn't exist
           fi
 
+      - name: prepare env file
+        if: steps.check_file.outcome == 'success'
+        run: |
+          echo "${{ github.event.inputs.env_file_content }} > postman_env.json
+
       - name: Set up Node.js
         if: steps.check_file.outcome == 'success'
         uses: actions/setup-node@v3
@@ -29,12 +38,13 @@ jobs:
       - name: Install dependencies
         if: steps.check_file.outcome == 'success'
         run: |
-          npm install -g newman newman-reporter-ctrf-json  # Install Newman and the custom reporter
+          npm install -g newman newman-reporter-ctrf-json
 
       - name: Run Newman tests
         if: steps.check_file.outcome == 'success'        
         run: |
           newman run ./api.postman_collection.json \
+            --environment postman_env.json \
             -r cli,ctrf-json \
             --reporter-ctrf-json-test-type api \
             --reporter-ctrf-json-app-name 'Api Testing result'
