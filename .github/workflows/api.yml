@@ -6,7 +6,7 @@ on:
     inputs:
       env_content:
         description: 'Content of postman environment file'
-        default: '{"id":"env","values":["baseUrl":"localhost"]}'
+        default: '{"id":"env","values":[{"baseUrl":"localhost"}]}'
 
 jobs:
   newman-tests:
