@@ -11,26 +11,34 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Check if collection file exists
+        id: check_file
+        run: |
+          if [ ! -f ./api.postman_collection.json ]; then
+            echo "Collection file not found!"
+            exit 1  # Fail the job if the file doesn't exist
+          fi
 
       - name: Set up Node.js
+        if: steps.check_file.outcome == 'success'
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
       - name: Install dependencies
+        if: steps.check_file.outcome == 'success'
         run: |
           npm install -g newman newman-reporter-ctrf-json  # Install Newman and the custom reporter
 
       - name: Run Newman tests
+        if: steps.check_file.outcome == 'success'        
         run: |
           newman run ./api.postman_collection.json \
             -r cli,ctrf-json \
             --reporter-ctrf-json-test-type api \
             --reporter-ctrf-json-app-name 'Api Testing result'
 
-      - name: Check if report exists
-        run: ls -l ./ctrf/ctrf-report.json
-
       - name: Export test summary
-        if: always()
+        if: steps.check_file.outcome == 'success'
         run: npx github-actions-ctrf ./ctrf/ctrf-report.json
