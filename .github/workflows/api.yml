@@ -33,7 +33,7 @@ jobs:
         if: steps.check_file.outcome == 'success'
         run: |
           echo "Environment file content:"
-          echo "${{ github.event.inputs.env_content }}" > postman_env.json
+          echo "${{ inputs.postman_env_content }}" > postman_env_content.json
           cat postman_env.json
           
       - name: Validate JSON structure
@@ -55,7 +55,7 @@ jobs:
         if: steps.check_file.outcome == 'success'        
         run: |
           newman run ./api.postman_collection.json \
-            --environment postman_env.json \
+            --environment postman_env_content.json \
             -r cli,ctrf-json \
             --reporter-ctrf-json-test-type api \
             --reporter-ctrf-json-app-name 'Api Testing result'
