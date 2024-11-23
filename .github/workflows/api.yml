@@ -15,12 +15,12 @@ jobs:
       - name: Run Newman tests in Docker
         run: |
           docker run --rm -v ${{ github.workspace }}:/etc/newman \
-            postman/newman:latest run /etc/newman/path/to/your/postman_collection.json \
+            postman/newman:latest run /etc/newman/postman_collection.json \
             --reporters cli,html \
             --reporter-html-export /etc/newman/report.html  # Specify output path for HTML report
           
       - name: Upload Newman Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: newman-report
           path: ./report.html
