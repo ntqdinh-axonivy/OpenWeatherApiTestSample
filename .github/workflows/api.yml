@@ -12,21 +12,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Newman tests in Docker
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
         run: |
-          docker run --rm \
-          -v ${{ github.workspace }}:/etc/newman \
-          --entrypoint sh \
-          postman/newman:latest -c "
-          npm install newman-reporter-ctrf-json &&
-          newman run /etc/newman/api.postman_collection.json \
-          -r cli,ctrf-json \
-          --reporter-ctrf-json-test-type api \
-          --reporter-ctrf-json-app-name Api Testing result
-          "
-          
+          npm install -g newman newman-reporter-ctrf-json  # Install Newman and the custom reporter
+
+      - name: Run Newman tests
+        run: |
+          newman run ./api.postman_collection.json \
+            -r cli,ctrf-json \
+            --reporter-ctrf-json-test-type api \
+            --reporter-ctrf-json-app-name 'Api Testing result'
+
       - name: Check if report exists
-        run: ls -l ./report.html
+        run: ls -l ./ctrf/ctrf-report.json
 
       - name: Export test summary
         if: always()
