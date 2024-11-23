@@ -21,7 +21,7 @@ jobs:
           npm install newman-reporter-ctrf-json &&
           newman run /etc/newman/api.postman_collection.json \
           -r cli,ctrf-json \
-          --reporter-ctrf-json-test-type api 
+          --reporter-ctrf-json-test-type api \
           --reporter-ctrf-json-app-name Api Testing result
           "
           
