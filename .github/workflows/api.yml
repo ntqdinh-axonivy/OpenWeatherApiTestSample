@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "Environment file content:"
           echo "${{ inputs.postman_env_content }}" > postman_env_content.json
-          cat postman_env.json
+          cat postman_env_content.json
           
       - name: Validate JSON structure
         run: cat postman_env.json | jq .
