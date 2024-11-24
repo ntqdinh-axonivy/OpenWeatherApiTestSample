@@ -18,26 +18,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Debug env_content input
-        run: |
-          echo "env_content: '${{ inputs.postman_env_content }}'"
-        
       - name: Check if collection file exists
         id: check_file
         run: |
-          if [ ! -f ./api.postman_collection.json ]; then
+          if [ ! -f ${{ inputs.postman_collection_location }} ]; then
             echo "Collection file not found!"
             exit 1  # Fail the job if the file doesn't exist
           fi
+
       - name: prepare env file
         if: steps.check_file.outcome == 'success'
         run: |
-          echo "Environment file content:"
           echo '${{ inputs.postman_env_content }}' > postman_env_content.json
-          cat postman_env_content.json
-          
-      - name: Validate JSON structure
-        run: cat postman_env.json | jq .
 
       - name: Set up Node.js
         if: steps.check_file.outcome == 'success'
@@ -56,6 +48,7 @@ jobs:
             -r cli,ctrf-json \
             --reporter-ctrf-json-test-type api \
             --reporter-ctrf-json-app-name 'Api Testing result'
+
       - name: Export test summary
         if: steps.check_file.outcome == 'success'
         run: npx github-actions-ctrf ./ctrf/ctrf-report.json
