@@ -8,5 +8,5 @@ jobs:
     uses: ntqdinh-axonivy/OpenWeatherApiTestSample/.github/workflows/api.yml@master
     with:
       postman_collection_location: ./api.postman_collection.json
-      postman_env_content: '{"id":"env","values":[{"baseUrl":"localHost"}]}'
+      postman_env_content: '{"id":"env","values":[{"token":"${{ secrets.POSTMAN_TOKEN }}"}]}'
 
