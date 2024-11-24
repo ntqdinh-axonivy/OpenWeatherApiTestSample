@@ -33,7 +33,7 @@ jobs:
         if: steps.check_file.outcome == 'success'
         run: |
           echo "Environment file content:"
-          echo "${{ inputs.postman_env_content }}" > postman_env_content.json
+          echo '${{ inputs.postman_env_content }}' > postman_env_content.json
           cat postman_env_content.json
           
       - name: Validate JSON structure
