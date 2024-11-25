@@ -71,5 +71,5 @@ jobs:
             echo "Exporting test summary..."
             npx github-actions-ctrf ./ctrf/ctrf-report.json
           else
-            echo "::warning title=Api Test Execution Is Skipped.::No API collections were found for testing. Skipped test execution."
+            echo "::warning title=Api Test Execution Skipped.::No API collections were found for testing. Skipped test execution."
           fi
