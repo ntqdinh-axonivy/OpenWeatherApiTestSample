@@ -25,11 +25,13 @@ jobs:
         run: |
           if [ ! -f ${{ inputs.postman_collection_location }} ]; then
             echo "Collection file not found!"
-            exit 1
+            echo "api_collections_found=false" >> $GITHUB_ENV
+          else
+            echo "api_collections_found=true" >> $GITHUB_ENV
           fi
 
       - name: Create env file
-        if: steps.check_file.outcome == 'success'
+        if: env.api_collections_found == 'true'
         run: |
           if [ -z "${{ secrets.postman_env_content }}" ]; then
             echo '{"values":[{"baseUrl":"localHost"}]}' > env.json
@@ -38,7 +40,7 @@ jobs:
           fi
 
       - name: Validate env.json format
-        if: steps.check_file.outcome == 'success'
+        if: env.api_collections_found == 'true'
         run: |
           if ! jq empty env.json; then
             echo "Invalid JSON format in secrets.postman_env_content"
@@ -46,16 +48,16 @@ jobs:
           fi
 
       - name: Set up Node.js
-        if: steps.check_file.outcome == 'success'
+        if: env.api_collections_found == 'true'
         uses: actions/setup-node@v3
 
       - name: Install dependencies
-        if: steps.check_file.outcome == 'success'
+        if: env.api_collections_found == 'true'
         run: |
           npm install -g newman newman-reporter-ctrf-json
 
       - name: Run Newman tests
-        if: steps.check_file.outcome == 'success'
+        if: env.api_collections_found == 'true'
         run: |
           newman run ${{ inputs.postman_collection_location }} \
             --environment env.json \
@@ -63,5 +65,5 @@ jobs:
             --reporter-ctrf-json-test-type api
 
       - name: Export test summary
-        if: steps.check_file.outcome == 'success'
+        if: env.api_collections_found == 'true'
         run: npx github-actions-ctrf ./ctrf/ctrf-report.json
