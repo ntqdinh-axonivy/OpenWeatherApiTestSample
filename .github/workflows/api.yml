@@ -13,7 +13,7 @@ on:
         required: false
 
 jobs:
-  run-api-testing:
+  execute-api-testing:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +28,7 @@ jobs:
             exit 1  # Fail the job if the file doesn't exist
           fi
 
-      - name: create env file
+      - name: Create env file
         if: steps.check_file.outcome == 'success'
         run: |
           if [ -z "${{ secrets.postman_env_content }}" ]; then
@@ -64,6 +64,4 @@ jobs:
 
       - name: Export test summary
         if: steps.check_file.outcome == 'success'
-        run: |
-          npx github-actions-ctrf ./ctrf/ctrf-report.json \
-          --title Api Testing Result
+        run: npx github-actions-ctrf ./ctrf/ctrf-report.json
