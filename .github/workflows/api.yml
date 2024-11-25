@@ -71,5 +71,5 @@ jobs:
             echo "Exporting test summary..."
             npx github-actions-ctrf ./ctrf/ctrf-report.json
           else
-            echo "There was no API collections found!"
+            echo "::warning title=Test Summary::No API collections were found for testing. Skipped test execution."
           fi
