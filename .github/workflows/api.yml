@@ -13,7 +13,7 @@ on:
         required: false
 
 jobs:
-  execute-api-testing:
+  api-testing:
     runs-on: ubuntu-latest
 
     steps:
@@ -65,5 +65,11 @@ jobs:
             --reporter-ctrf-json-test-type api
 
       - name: Export test summary
-        if: env.api_collections_found == 'true'
-        run: npx github-actions-ctrf ./ctrf/ctrf-report.json
+        if: always()
+        run: |
+          if [ "${{ env.api_collections_found }}" == "true" ]; then
+            echo "Exporting test summary..."
+            npx github-actions-ctrf ./ctrf/ctrf-report.json
+          else
+            echo "There was no API collections found!"
+          fi
