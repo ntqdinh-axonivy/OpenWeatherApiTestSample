@@ -2,6 +2,7 @@ name: Test api
 
 on:
   push:
+  workflow_dispatch:
 
 jobs:
   build-env-and-call:
