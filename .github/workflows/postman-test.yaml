@@ -4,9 +4,22 @@ on:
   push:
 
 jobs:
-  build:
-    uses: ntqdinh-axonivy/OpenWeatherApiTestSample/.github/workflows/api.yml@master
-    with:
-      postman_collection_location: ./api.postman_collection.json
-      postman_env_content: '{"id":"env","values":[{"baseUrl":"'"${{ secrets.TOKEN }}"'"}]}'
+  build-env-and-call:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate env file from github
+        run: |
+          echo '${{ secrets.POSTMAN_ENV }}'
+          echo '${{ secrets.POSTMAN_ENV }}' > postman_env.json
 
+      - name: Upload JSON as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: postman_env
+          path: postman_env.json
+
+      - name: Call api testing Workflow
+        uses: ntqdinh-axonivy/OpenWeatherApiTestSample/.github/workflows/api.yml@master
+        with:
+          postman_collection_location: ./api.postman_collection.json
+          postman_env_file_name: postman_env

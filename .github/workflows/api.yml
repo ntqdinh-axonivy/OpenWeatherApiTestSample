@@ -6,12 +6,11 @@ on:
       postman_collection_location:
         type: string
         default: ./api.postman_collection.json
-      postman_env_content:
+      postman_env_file_name:
         type: string
-        default: '{"id":"env","values":[{"baseUrl":"localHost"}]}'
 
 jobs:
-  newman-tests:
+  check-collection-availability:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,29 +25,35 @@ jobs:
             exit 1  # Fail the job if the file doesn't exist
           fi
 
-      - name: prepare env file
-        if: steps.check_file.outcome == 'success'
+  run-api-testing:
+    needs: check-collection-availability
+    if: needs.check-collection-availability.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: download env file
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.postman_env_file_name }}
+          path: ./postman
+
+      - name: check env file content
         run: |
-          echo '${{ inputs.postman_env_content }}' > postman_env_content.json
+          cat ./postman/${{ inputs.postman_env_file_name }}
 
       - name: Set up Node.js
-        if: steps.check_file.outcome == 'success'
         uses: actions/setup-node@v3
 
       - name: Install dependencies
-        if: steps.check_file.outcome == 'success'
         run: |
           npm install -g newman newman-reporter-ctrf-json
 
       - name: Run Newman tests
-        if: steps.check_file.outcome == 'success'        
         run: |
-          newman run ./api.postman_collection.json \
-            --environment postman_env_content.json \
+          newman run ${{ inputs.postman_collection_location }} \
+            --environment ./postman/${{ inputs.postman_env_file_name }} \
             -r cli,ctrf-json \
             --reporter-ctrf-json-test-type api \
             --reporter-ctrf-json-app-name 'Api Testing result'
 
       - name: Export test summary
-        if: steps.check_file.outcome == 'success'
         run: npx github-actions-ctrf ./ctrf/ctrf-report.json
