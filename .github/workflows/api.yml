@@ -6,8 +6,9 @@ on:
       postman_collection_location:
         type: string
         default: ./api.postman_collection.json
-      postman_env_file_name:
+      postman_env_content:
         type: string
+        default: '{"id":"env","values":[{"baseUrl":"localHost"}]}'
 
 jobs:
   check-collection-availability:
@@ -30,15 +31,10 @@ jobs:
     if: needs.check-collection-availability.result == 'success'
     runs-on: ubuntu-latest
     steps:
-      - name: download env file
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ inputs.postman_env_file_name }}
-          path: ./postman
+      - name: create env file
 
-      - name: check env file content
         run: |
-          cat ./postman/${{ inputs.postman_env_file_name }}
+          echo ${{ inputs.postman_env_content }} > env.json
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -50,7 +46,7 @@ jobs:
       - name: Run Newman tests
         run: |
           newman run ${{ inputs.postman_collection_location }} \
-            --environment ./postman/${{ inputs.postman_env_file_name }} \
+            --environment env.json \
             -r cli,ctrf-json \
             --reporter-ctrf-json-test-type api \
             --reporter-ctrf-json-app-name 'Api Testing result'
