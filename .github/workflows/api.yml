@@ -34,7 +34,7 @@ jobs:
           if [ -z "${{ secrets.postman_env_content }}" ]; then
             echo '{"id":"env","values":[{"baseUrl":"localHost"}]}' > env.json
           else
-            echo "${{ secrets.postman_env_content }}" > env.json
+            echo '${{ secrets.postman_env_content }}' > env.json
           fi
 
       - name: Set up Node.js
