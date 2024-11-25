@@ -13,7 +13,7 @@ on:
         required: false
 
 jobs:
-  check-collection-availability:
+  run-api-testing:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,12 +28,8 @@ jobs:
             exit 1  # Fail the job if the file doesn't exist
           fi
 
-  run-api-testing:
-    needs: check-collection-availability
-    if: needs.check-collection-availability.result == 'success'
-    runs-on: ubuntu-latest
-    steps:
       - name: create env file
+        if: steps.check_file.outputs == 'success'
         run: |
           if [ -z "${{ secrets.postman_env_content }}" ]; then
             echo '{"id":"env","values":[{"baseUrl":"localHost"}]}' > env.json
@@ -42,13 +38,16 @@ jobs:
           fi
 
       - name: Set up Node.js
+        if: steps.check_file.outputs == 'success'
         uses: actions/setup-node@v3
 
       - name: Install dependencies
+        if: steps.check_file.outputs == 'success'
         run: |
           npm install -g newman newman-reporter-ctrf-json
 
       - name: Run Newman tests
+        if: steps.check_file.outputs == 'success'
         run: |
           newman run ${{ inputs.postman_collection_location }} \
             --environment env.json \
@@ -57,4 +56,5 @@ jobs:
             --reporter-ctrf-json-app-name 'Api Testing result'
 
       - name: Export test summary
+        if: steps.check_file.outputs == 'success'
         run: npx github-actions-ctrf ./ctrf/ctrf-report.json
