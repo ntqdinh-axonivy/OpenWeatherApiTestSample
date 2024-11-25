@@ -34,7 +34,7 @@ jobs:
         if: env.api_collections_found == 'true'
         run: |
           if [ -z "${{ secrets.postman_env_content }}" ]; then
-            echo '{"values":[{"baseUrl":"localHost"}]}' > env.json
+            echo '{"values":[{"key":"name","value":"postman-env"}]}' > env.json
           else
             echo '${{ secrets.postman_env_content }}' > env.json
           fi
@@ -71,5 +71,5 @@ jobs:
             echo "Exporting test summary..."
             npx github-actions-ctrf ./ctrf/ctrf-report.json
           else
-            echo "::warning title=No API collections were found for testing. Skipped test execution."
+            echo "::warning title=Api Test Execution Is Skipped.::No API collections were found for testing. Skipped test execution."
           fi
