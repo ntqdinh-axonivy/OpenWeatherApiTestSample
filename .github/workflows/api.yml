@@ -4,11 +4,13 @@ on:
   workflow_call:
     inputs:
       postman_collection_location:
+        description: Location of postman collection file in the repo
         type: string
         default: ./api.postman_collection.json
+    secrets:
       postman_env_content:
-        type: string
-        default: '{"id":"env","values":[{"baseUrl":"localHost"}]}'
+        description: The content of postman env file in string format
+        required: false
 
 jobs:
   check-collection-availability:
@@ -32,9 +34,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: create env file
-
         run: |
-          echo ${{ inputs.postman_env_content }} > env.json
+          if [ -z "${{ secrets.postman_env_content }}" ]; then
+            echo '{"id":"env","values":[{"baseUrl":"localHost"}]}' > env.json
+          else
+            echo "${{ secrets.postman_env_content }}" > env.json
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
